@@ -32,6 +32,7 @@ a ``token=True`` argument when creating the
 
 import requests
 import time
+import logging
 
 from icontrol.exceptions import iControlUnexpectedHTTPError
 from icontrol.exceptions import InvalidScheme
@@ -121,6 +122,7 @@ class iControlRESTTokenAuth(AuthBase):
         it can be called if it is known that the authentication token has
         been invalidated by other means.
         """
+        logger = logging.getLogger(__name__)
         login_body = {
             'username': self.username,
             'password': self.password,
@@ -185,6 +187,8 @@ class iControlRESTTokenAuth(AuthBase):
             self.expiration = self._get_token_expiration_time(
                 created_bigip, expiration_bigip
             )
+            logger.debug("Wait for 1 sec after login...")
+            time.sleep(1)
         except iControlUnexpectedHTTPError:
             error_message = \
                 '%s Token already expired: %s for uri: %s Text: %r' % \

@@ -146,7 +146,7 @@ class iControlRESTTokenAuth(AuthBase):
             if self.login_provider_name == 'tmos':
                 login_body['loginProviderName'] = self.login_provider_name
 
-        login_url = "https://%s/mgmt/shared/authn/login" % (netloc)
+        login_url = "https://%s/mgmt/tm/login" % (netloc)
 
         response = requests.post(
             login_url,

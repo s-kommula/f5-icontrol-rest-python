@@ -260,5 +260,5 @@ class iControlRESTTokenAuth(AuthBase):
             if scheme != "https":
                 raise InvalidScheme(scheme)
             self.get_new_token(netloc)
-        request.headers['X-F5-Auth-Token'] = self.token
+        request.headers['Authorization'] = f'Bearer {self.token}'
         return request

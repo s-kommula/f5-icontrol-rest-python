@@ -148,7 +148,7 @@ class iControlRESTTokenAuth(AuthBase):
 
         login_url = "https://%s/mgmt/tm/login" % (netloc)
 
-        response = requests.post(
+        response = requests.get(
             login_url,
             json=login_body,
             verify=self.verify,
@@ -167,37 +167,37 @@ class iControlRESTTokenAuth(AuthBase):
         respJson = response.json()
 
         token = self._get_token_from_response(respJson)
-        created_bigip = self._get_last_update_micros(token)
+        #created_bigip = self._get_last_update_micros(token)
 
-        try:
-            expiration_bigip = self._get_expiration_micros(
-                token, created_bigip
-            )
-        except (KeyError, ValueError):
-            error_message = \
-                '%s Unparseable Response: %s for uri: %s Text: %r' %\
-                (response.status_code,
-                 response.reason,
-                 response.url,
-                 response.text)
-            raise iControlUnexpectedHTTPError(error_message,
-                                              response=response)
+        # try:
+        #     expiration_bigip = self._get_expiration_micros(
+        #         token, created_bigip
+        #     )
+        # except (KeyError, ValueError):
+        #     error_message = \
+        #         '%s Unparseable Response: %s for uri: %s Text: %r' %\
+        #         (response.status_code,
+        #          response.reason,
+        #          response.url,
+        #          response.text)
+        #     raise iControlUnexpectedHTTPError(error_message,
+        #                                       response=response)
 
-        try:
-            self.expiration = self._get_token_expiration_time(
-                created_bigip, expiration_bigip
-            )
-            logger.debug("Wait for 1 sec after login...")
-            time.sleep(1)
-        except iControlUnexpectedHTTPError:
-            error_message = \
-                '%s Token already expired: %s for uri: %s Text: %r' % \
-                (response.status_code,
-                 time.ctime(expiration_bigip),
-                 response.url,
-                 response.text)
-            raise iControlUnexpectedHTTPError(error_message,
-                                              response=response)
+        # try:
+        #     self.expiration = self._get_token_expiration_time(
+        #         created_bigip, expiration_bigip
+        #     )
+        #     logger.debug("Wait for 1 sec after login...")
+        #     time.sleep(1)
+        # except iControlUnexpectedHTTPError:
+        #     error_message = \
+        #         '%s Token already expired: %s for uri: %s Text: %r' % \
+        #         (response.status_code,
+        #          time.ctime(expiration_bigip),
+        #          response.url,
+        #          response.text)
+        #     raise iControlUnexpectedHTTPError(error_message,
+        #                                       response=response)
 
     def _get_expiration_micros(self, token, created_bigip=None):
         if 'expirationMicros' in token:
@@ -247,7 +247,7 @@ class iControlRESTTokenAuth(AuthBase):
     def _get_token_from_response(self, respJson):
         try:
             token = respJson['token']
-            self.token = token['token']
+            self.token = token
         except KeyError:
             raise iControlUnexpectedHTTPError(
                 "Token field not found in the response"
